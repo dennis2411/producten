@@ -26,6 +26,17 @@
       "prijs": "39,95",
       "afmetingen": "Set van 3\n40 x 30 x 15 cm",
       "foto": ""
+    },
+    {
+      "id": "p1794075938835",
+      "cat": "set",
+      "naam": "Set 1 Kerst",
+      "artnr": "S0001",
+      "prijs": "25,00",
+      "afmetingen": "",
+      "thema": "Kerst",
+      "verborgen": false,
+      "foto": ""
     }
   ]
 }
