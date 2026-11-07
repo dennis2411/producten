@@ -126,7 +126,8 @@ const guessRepo=()=>{const h=location.hostname,p=location.pathname.split('/')[1]
 const isAdmin=()=>!!(token&&repo);
 
 async function load(){
-  try{const r=await fetch('products.json?'+Date.now());const d=await r.json();if(Array.isArray(d))items=d;else{items=d.items||[];if(d.themas)themas=d.themas}}
+  try{const plain=()=>fetch('products.json?'+Date.now());
+    const r=isAdmin()?await fetch(api('products.json'),{headers:{...H(),Accept:'application/vnd.github.raw+json'},cache:'no-store'}).then(x=>x.ok?x:plain()).catch(plain):await plain();const d=await r.json();if(Array.isArray(d))items=d;else{items=d.items||[];if(d.themas)themas=d.themas}}
   catch(e){items=[]}
   render();
 }
