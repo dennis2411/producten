@@ -1,11 +1,31 @@
-[
-  {
-    "id": "p2",
-    "cat": "set",
-    "naam": "Voorbeeldset",
-    "artnr": "2001",
-    "prijs": "39,95",
-    "afmetingen": "Set van 3\n40 x 30 x 15 cm",
-    "foto": ""
-  }
-]
+{
+  "themas": [
+    {
+      "naam": "Sinterklaas",
+      "aan": true
+    },
+    {
+      "naam": "Kerst",
+      "aan": true
+    },
+    {
+      "naam": "Pasen",
+      "aan": false
+    },
+    {
+      "naam": "Valentijn",
+      "aan": false
+    }
+  ],
+  "items": [
+    {
+      "id": "p2",
+      "cat": "set",
+      "naam": "Voorbeeldset",
+      "artnr": "2001",
+      "prijs": "39,95",
+      "afmetingen": "Set van 3\n40 x 30 x 15 cm",
+      "foto": ""
+    }
+  ]
+}
