@@ -46,6 +46,14 @@ label{display:grid;gap:4px;font-weight:600;font-size:.9rem}
 input,textarea,select{font:inherit;padding:9px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
 .msg{color:#c0392b;font-size:.9rem;min-height:1.2em}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;display:none}
+.tools{display:grid;gap:10px;margin-bottom:16px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chips button{font:inherit;font-size:.9rem;padding:6px 14px;border-radius:99px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.chips button[aria-current=true]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.bar{gap:10px}
+.chk{display:flex;align-items:center;gap:10px;font-weight:400}.chk input{width:auto}
+.card.dim{opacity:.55}
+.tag{display:inline-block;font-size:.75rem;border:1px solid var(--line);border-radius:99px;padding:0 8px;margin:4px 4px 0 0;color:var(--mute)}
 </style>
 </head>
 <body>
@@ -58,7 +66,8 @@ input,textarea,select{font:inherit;padding:9px 10px;border-radius:8px;border:1.5
   <button data-cat="set">Set</button>
 </nav>
 <main>
-  <div class="bar" id="bar" hidden><button class="btn" id="addBtn">Nieuw toevoegen</button></div>
+  <div class="tools"><input id="q" type="search" placeholder="Zoek op naam of artikelnummer" aria-label="Zoeken"><div class="chips" id="chips"></div></div>
+  <div class="bar" id="bar" hidden><button class="btn ghost" id="themBtn">Thema's</button><button class="btn" id="addBtn">Nieuw toevoegen</button></div>
   <div class="grid" id="grid"></div>
 </main>
 
@@ -83,13 +92,23 @@ input,textarea,select{font:inherit;padding:9px 10px;border-radius:8px;border:1.5
   <div class="msg" id="sMsg"></div>
   <div class="row"><button type="button" class="btn ghost" id="sClose">Sluiten</button><button class="btn" id="sGo">Maak config.json</button><button type="button" class="btn" id="sDl" hidden>Download config.json</button></div>
 </form></dialog>
+<dialog id="themDlg"><form class="dlg" method="dialog" onsubmit="return false">
+  <h2>Thema's</h2>
+  <p class="art">Zet een thema uit om alle producten daarvan te verbergen. Ze blijven bewaard.</p>
+  <div id="themList" style="display:grid;gap:8px"></div>
+  <label>Nieuw thema<input id="themNew" placeholder="Bijv. Valentijn"></label>
+  <div class="row"><button type="button" class="btn ghost" id="themAdd">Toevoegen</button><button type="button" class="btn ghost" id="themCancel">Annuleren</button><button type="button" class="btn" id="themSave">Opslaan</button></div>
+  <div class="msg" id="themMsg"></div>
+</form></dialog>
 <dialog id="edit"><form class="dlg" id="editForm" method="dialog">
   <h2 id="editTitle">Product</h2>
   <label>Naam<input id="fNaam" required></label>
   <label>Pagina<select id="fCat"><option value="producten">Producten</option><option value="set">Set</option></select></label>
+  <label>Thema<select id="fThema"></select></label>
   <label>Artikelnummer<input id="fArt" required></label>
   <label>Prijs (bijv. 12,50)<input id="fPrijs" required></label>
   <label>Afmetingen<textarea id="fDim" rows="3" placeholder="Bijv. 30 x 20 x 10 cm"></textarea></label>
+  <label class="chk"><input type="checkbox" id="fHid"> Verbergen voor bezoekers</label>
   <label>Foto<input type="file" id="fFoto" accept="image/*"></label>
   <div class="msg" id="editMsg"></div>
   <div class="row"><button type="button" class="btn ghost" id="editCancel">Annuleren</button><button class="btn" id="saveBtn">Opslaan</button></div>
@@ -98,7 +117,7 @@ input,textarea,select{font:inherit;padding:9px 10px;border-radius:8px;border:1.5
 
 <script>
 const $=s=>document.querySelector(s);
-let items=[], cat=(location.hash==='#set'?'set':'producten'), editing=null;
+let themas=[{naam:'Sinterklaas',aan:true},{naam:'Kerst',aan:true},{naam:'Pasen',aan:true}], th='', items=[], cat=(location.hash==='#set'?'set':'producten'), editing=null;
 let token=null, repo=null, who=null;
 try{token=sessionStorage.getItem('tok');repo=sessionStorage.getItem('repo');who=sessionStorage.getItem('who')}catch(e){}
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -107,30 +126,37 @@ const guessRepo=()=>{const h=location.hostname,p=location.pathname.split('/')[1]
 const isAdmin=()=>!!(token&&repo);
 
 async function load(){
-  try{const r=await fetch('products.json?'+Date.now());items=await r.json()}
+  try{const r=await fetch('products.json?'+Date.now());const d=await r.json();if(Array.isArray(d))items=d;else{items=d.items||[];if(d.themas)themas=d.themas}}
   catch(e){items=[]}
   render();
 }
 function pic(it){return it.foto?`<img src="${esc(it.foto)}" alt="${esc(it.naam)}" loading="lazy">`:'Geen foto'}
+const themaAan=t=>!t||(themas.find(x=>x.naam===t)||{aan:true}).aan;
 function render(){
+  const adm=isAdmin(),q=$('#q').value.trim().toLowerCase();
   document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.cat===cat));
-  $('#bar').hidden=!isAdmin();
-  $('#adminBtn').textContent=isAdmin()?'Uitloggen ('+(who||'')+')':'Beheer';
-  const list=items.filter(i=>i.cat===cat);
-  $('#grid').innerHTML=list.length?list.map(i=>`<button class="card" data-id="${esc(i.id)}"><div class="pic">${pic(i)}</div><div class="info"><b>${esc(i.naam)}</b><span class="art">Art.nr. ${esc(i.artnr)}</span><div class="price">${esc(euro(i.prijs))}</div></div></button>`).join(''):'<p class="empty">Nog niets op deze pagina.</p>';
+  $('#bar').hidden=!adm;
+  $('#adminBtn').textContent=adm?'Uitloggen ('+(who||'')+')':'Beheer';
+  const shown=themas.filter(t=>adm||t.aan);
+  $('#chips').innerHTML=shown.length?[{naam:'',lbl:'Alle'},...shown.map(t=>({naam:t.naam,lbl:t.naam+(t.aan?'':' (uit)')}))].map(t=>`<button data-t="${esc(t.naam)}" aria-current="${th===t.naam}">${esc(t.lbl)}</button>`).join(''):'';
+  const list=items.filter(i=>(adm||(!i.verborgen&&themaAan(i.thema)))&&(q||i.cat===cat)&&(!th||i.thema===th)&&(!q||(i.naam+' '+i.artnr).toLowerCase().includes(q)));
+  $('#grid').innerHTML=list.length?list.map(i=>{const off=adm&&(i.verborgen||!themaAan(i.thema));return `<button class="card${off?' dim':''}" data-id="${esc(i.id)}"><div class="pic">${pic(i)}</div><div class="info"><b>${esc(i.naam)}</b><span class="art">Art.nr. ${esc(i.artnr)}</span><div class="price">${esc(euro(i.prijs))}</div>${adm?`${i.thema?`<span class="tag">${esc(i.thema)}</span>`:''}${i.verborgen?'<span class="tag">Verborgen</span>':''}${!themaAan(i.thema)?'<span class="tag">Thema uit</span>':''}`:''}</div></button>`}).join(''):`<p class="empty">${q?'Niets gevonden.':'Nog niets op deze pagina.'}</p>`;
 }
+$('#q').oninput=render;
+$('#chips').onclick=e=>{const b=e.target.closest('button');if(!b)return;th=b.dataset.t;render()};
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{cat=b.dataset.cat;try{history.replaceState(null,'','#'+cat)}catch(x){}render()});
 $('#grid').onclick=e=>{const c=e.target.closest('.card');if(c)openDetail(c.dataset.id)};
 
 function openDetail(id){
   const i=items.find(x=>x.id===id);if(!i)return;
   $('#detailBody').innerHTML=`<div class="pic">${pic(i)}</div><h2>${esc(i.naam)}</h2>
-  <div><span class="art">Artikelnummer ${esc(i.artnr)}</span><div class="price">${esc(euro(i.prijs))}</div></div>
+  <div><span class="art">Artikelnummer ${esc(i.artnr)}${i.thema?' · '+esc(i.thema):''}</span><div class="price">${esc(euro(i.prijs))}</div></div>
   <div class="dims"><small>Afmetingen</small>${esc(i.afmetingen||'Niet opgegeven')}</div>
-  <div class="row">${isAdmin()?`<button class="btn danger" id="delBtn">Verwijderen</button><button class="btn ghost" id="editBtn">Bewerken</button>`:''}<button class="btn" id="closeBtn">Sluiten</button></div>`;
+  <div class="row">${isAdmin()?`<button class="btn danger" id="delBtn">Verwijderen</button><button class="btn ghost" id="hidBtn">${i.verborgen?'Tonen':'Verbergen'}</button><button class="btn ghost" id="editBtn">Bewerken</button>`:''}<button class="btn" id="closeBtn">Sluiten</button></div>`;
   $('#closeBtn').onclick=()=>$('#detail').close();
   if(isAdmin()){
     $('#editBtn').onclick=()=>{$('#detail').close();openEdit(i)};
+    $('#hidBtn').onclick=async()=>{try{await commit(items.map(x=>x.id===i.id?{...x,verborgen:!x.verborgen}:x),(i.verborgen?'Toon ':'Verberg ')+i.naam);$('#detail').close()}catch(e){alert(e.message)}};
     $('#delBtn').onclick=async()=>{if(!confirm('Dit product verwijderen?'))return;
       try{await commit(items.filter(x=>x.id!==i.id),'Verwijder '+i.naam);$('#detail').close()}catch(e){alert(e.message)}};
   }
@@ -180,9 +206,16 @@ $('#setupForm').onsubmit=async e=>{
 };
 if(location.hash==='#setup')openSetup();
 
+let tmp=[];
+function drawThemes(){$('#themList').innerHTML=tmp.map((t,i)=>`<label class="chk"><input type="checkbox" data-i="${i}" ${t.aan?'checked':''}> ${esc(t.naam)}</label>`).join('')}
+$('#themBtn').onclick=()=>{tmp=themas.map(t=>({...t}));drawThemes();$('#themMsg').textContent='';$('#themDlg').showModal()};
+$('#themList').onchange=e=>{tmp[e.target.dataset.i].aan=e.target.checked};
+$('#themAdd').onclick=()=>{const n=$('#themNew').value.trim();if(!n||tmp.some(t=>t.naam.toLowerCase()===n.toLowerCase()))return;tmp.push({naam:n,aan:true});$('#themNew').value='';drawThemes()};
+$('#themCancel').onclick=()=>$('#themDlg').close();
+$('#themSave').onclick=async()=>{$('#themMsg').textContent='Opslaan...';try{await commit(items,'Thema\'s',tmp);$('#themDlg').close()}catch(e){$('#themMsg').textContent=e.message}};
 function openEdit(i){
   editing=i;$('#editTitle').textContent=i?'Product bewerken':'Nieuw toevoegen';
-  $('#fNaam').value=i?.naam||'';$('#fCat').value=i?.cat||cat;$('#fArt').value=i?.artnr||'';
+  $('#fNaam').value=i?.naam||'';$('#fCat').value=i?.cat||cat;$('#fArt').value=i?.artnr||'';$('#fThema').innerHTML='<option value="">Geen</option>'+themas.map(t=>`<option>${esc(t.naam)}</option>`).join('');$('#fThema').value=i?.thema||'';$('#fHid').checked=!!i?.verborgen;
   $('#fPrijs').value=i?.prijs||'';$('#fDim').value=i?.afmetingen||'';$('#fFoto').value='';$('#editMsg').textContent='';
   $('#edit').showModal();
 }
@@ -195,7 +228,7 @@ $('#editForm').onsubmit=async e=>{
     let foto=editing?.foto||'';
     const f=$('#fFoto').files[0];
     if(f){const path='fotos/'+Date.now()+'.jpg';await putFile(path,await shrink(f),'Foto '+$('#fNaam').value);foto=path}
-    const it={id:editing?.id||('p'+Date.now()),cat:$('#fCat').value,naam:$('#fNaam').value.trim(),artnr:$('#fArt').value.trim(),prijs:$('#fPrijs').value.trim(),afmetingen:$('#fDim').value.trim(),foto};
+    const it={id:editing?.id||('p'+Date.now()),cat:$('#fCat').value,naam:$('#fNaam').value.trim(),artnr:$('#fArt').value.trim(),prijs:$('#fPrijs').value.trim(),afmetingen:$('#fDim').value.trim(),thema:$('#fThema').value,verborgen:$('#fHid').checked,foto};
     const next=editing?items.map(x=>x.id===it.id?it:x):[...items,it];
     await commit(next,(editing?'Wijzig ':'Voeg toe ')+it.naam);
     cat=it.cat;try{history.replaceState(null,'','#'+cat)}catch(x){}render();
@@ -214,9 +247,9 @@ async function putFile(path,b64,message){
   const r=await fetch(api(path),{method:'PUT',headers:H(),body:JSON.stringify({message,content:b64,sha})});
   if(!r.ok)throw new Error('GitHub weigerde de opslag ('+r.status+'). Controleer de rechten van je code.');
 }
-async function commit(next,message){
-  await putFile('products.json',btoa(unescape(encodeURIComponent(JSON.stringify(next,null,2)))),message);
-  items=next;render();
+async function commit(next,message,nt){
+  await putFile('products.json',btoa(unescape(encodeURIComponent(JSON.stringify({themas:nt||themas,items:next},null,2)))),message);
+  if(nt)themas=nt;items=next;render();
   const t=$('#toast');t.textContent='Opgeslagen. Op de site kan het even duren voordat het zichtbaar is.';t.style.display='block';setTimeout(()=>t.style.display='none',4000);
 }
 function shrink(file){
