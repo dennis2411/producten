@@ -1,14 +1,5 @@
 [
   {
-    "id": "p1",
-    "cat": "producten",
-    "naam": "Voorbeeldproduct",
-    "artnr": "1001",
-    "prijs": "12,50",
-    "afmetingen": "30 x 20 x 10 cm",
-    "foto": ""
-  },
-  {
     "id": "p2",
     "cat": "set",
     "naam": "Voorbeeldset",
