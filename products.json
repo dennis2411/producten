@@ -1,0 +1,20 @@
+[
+  {
+    "id": "p1",
+    "cat": "producten",
+    "naam": "Voorbeeldproduct",
+    "artnr": "1001",
+    "prijs": "12,50",
+    "afmetingen": "30 x 20 x 10 cm",
+    "foto": ""
+  },
+  {
+    "id": "p2",
+    "cat": "set",
+    "naam": "Voorbeeldset",
+    "artnr": "2001",
+    "prijs": "39,95",
+    "afmetingen": "Set van 3\n40 x 30 x 15 cm",
+    "foto": ""
+  }
+]
