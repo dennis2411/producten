@@ -74,12 +74,28 @@
     {
       "id": "p1794096601990",
       "cat": "producten",
-      "naam": "Kerstboom ribbel klein (Theelicht)",
+      "naam": "Kerstboom ribbel klein",
       "artnr": "K0003",
-      "prijs": "4,00",
-      "afmetingen": "13cm",
+      "prijs": "",
+      "afmetingen": "",
       "thema": "Kerst",
       "verborgen": false,
+      "theelicht": true,
+      "maten": [
+        {
+          "maat": "Klein, 13cm",
+          "prijs": "€3,00"
+        },
+        {
+          "maat": "Middel, 17cm",
+          "prijs": "€4,00"
+        },
+        {
+          "maat": "Groot, 24cm",
+          "prijs": "€7,50"
+        }
+      ],
+      "kl": [],
       "foto": "fotos/1794096599168.jpg"
     }
   ]
