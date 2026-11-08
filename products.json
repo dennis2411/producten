@@ -192,6 +192,19 @@
       "theelicht": false,
       "maten": [],
       "foto": "fotos/1794145290196.jpg"
+    },
+    {
+      "id": "p1794145399047",
+      "cat": "producten",
+      "naam": "Kerstboom groot",
+      "artnr": "D011",
+      "prijs": "15,00",
+      "afmetingen": "32cm",
+      "thema": "Kerst",
+      "verborgen": false,
+      "theelicht": false,
+      "maten": [],
+      "foto": "fotos/1794145396496.jpg"
     }
   ]
 }
