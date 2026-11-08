@@ -140,6 +140,19 @@
       "theelicht": false,
       "maten": [],
       "foto": "fotos/1794143712740.jpg"
+    },
+    {
+      "id": "p1794143908348",
+      "cat": "producten",
+      "naam": "Pompoen set",
+      "artnr": "D0008",
+      "prijs": "11,00",
+      "afmetingen": "15x11cm\n9x6cm",
+      "thema": "Herfst",
+      "verborgen": false,
+      "theelicht": false,
+      "maten": [],
+      "foto": "fotos/1794143905079.jpg"
     }
   ]
 }
