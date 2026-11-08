@@ -127,6 +127,19 @@
       "theelicht": false,
       "maten": [],
       "foto": "fotos/1794143544201.jpg"
+    },
+    {
+      "id": "p1794143716569",
+      "cat": "producten",
+      "naam": "PSV Bord",
+      "artnr": "D0007",
+      "prijs": "10,00",
+      "afmetingen": "32cm",
+      "thema": "Woondecoratie",
+      "verborgen": false,
+      "theelicht": false,
+      "maten": [],
+      "foto": "fotos/1794143712740.jpg"
     }
   ]
 }
