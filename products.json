@@ -166,6 +166,19 @@
       "theelicht": false,
       "maten": [],
       "foto": "fotos/1794144068533.jpg"
+    },
+    {
+      "id": "p1794144138205",
+      "cat": "producten",
+      "naam": "It’s timeeeee tekst",
+      "artnr": "D0009",
+      "prijs": "5,00",
+      "afmetingen": "22,5x5cm",
+      "thema": "Kerst",
+      "verborgen": false,
+      "theelicht": false,
+      "maten": [],
+      "foto": "fotos/1794144134291.jpg"
     }
   ]
 }
