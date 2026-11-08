@@ -43,6 +43,17 @@
       "thema": "Herfst",
       "verborgen": false,
       "foto": "fotos/1794096063512.jpg"
+    },
+    {
+      "id": "p1794096264129",
+      "cat": "producten",
+      "naam": "Sneeuwpop",
+      "artnr": "K0001",
+      "prijs": "5,00",
+      "afmetingen": "13x6,5cm",
+      "thema": "Kerst",
+      "verborgen": false,
+      "foto": "fotos/1794096261949.jpg"
     }
   ]
 }
