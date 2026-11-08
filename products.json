@@ -114,6 +114,19 @@
       "theelicht": false,
       "maten": [],
       "foto": "fotos/1794143383746.jpg"
+    },
+    {
+      "id": "p1794143548513",
+      "cat": "producten",
+      "naam": "Sint & Piet tekst",
+      "artnr": "D0006",
+      "prijs": "5,00",
+      "afmetingen": "18x9cm",
+      "thema": "Sinterklaas",
+      "verborgen": false,
+      "theelicht": false,
+      "maten": [],
+      "foto": "fotos/1794143544201.jpg"
     }
   ]
 }
