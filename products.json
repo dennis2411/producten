@@ -205,6 +205,19 @@
       "theelicht": false,
       "maten": [],
       "foto": "fotos/1794145396496.jpg"
+    },
+    {
+      "id": "p1794145566016",
+      "cat": "producten",
+      "naam": "Kerst trein",
+      "artnr": "D0012",
+      "prijs": "6,00",
+      "afmetingen": "19x6x6cm",
+      "thema": "",
+      "verborgen": false,
+      "theelicht": false,
+      "maten": [],
+      "foto": "fotos/1794145563176.jpg"
     }
   ]
 }
