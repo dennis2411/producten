@@ -86,7 +86,7 @@ input,textarea,select{padding:12px}
 </head>
 <body>
 <header>
-  <h1>Mijn producten <small style="font-size:.8rem;color:var(--mute);font-weight:400">testversie</small></h1>
+  <h1>Mijn producten</h1>
   <button class="link" id="adminBtn">Beheer</button>
 </header>
 <nav>
@@ -156,8 +156,9 @@ const guessRepo=()=>{const h=location.hostname,p=location.pathname.split('/')[1]
 const isAdmin=()=>!!(token&&repo);
 
 async function load(){
-  try{const r=await fetch('products.json?'+Date.now());const d=await r.json();if(Array.isArray(d))items=d;else{items=d.items||[];if(d.themas)themas=d.themas}}
-  catch(e){items=[{id:'p1',cat:'producten',naam:'Voorbeeldproduct',thema:'Kerst',maten:[{maat:'Klein, 10 cm',prijs:'8,95'},{maat:'Groot, 20 cm',prijs:'14,95'}],theelicht:true,artnr:'1001',prijs:'12,50',afmetingen:'30 x 20 x 10 cm',foto:''},{id:'p2',cat:'producten',naam:'Tweede product',thema:'Pasen',artnr:'1002',prijs:'8,95',afmetingen:'15 x 15 x 5 cm',foto:''},{id:'p3',cat:'set',naam:'Voorbeeldset',thema:'Sinterklaas',artnr:'2001',prijs:'39,95',afmetingen:'Set van 3\n40 x 30 x 15 cm',foto:''}]}
+  try{const plain=()=>fetch('products.json?'+Date.now());
+    const r=isAdmin()?await fetch(api('products.json'),{headers:{...H(),Accept:'application/vnd.github.raw+json'},cache:'no-store'}).then(x=>x.ok?x:plain()).catch(plain):await plain();const d=await r.json();if(Array.isArray(d))items=d;else{items=d.items||[];if(d.themas)themas=d.themas}}
+  catch(e){items=[]}
   render();
 }
 function pic(it){return(it.foto?`<img src="${esc(it.foto)}" alt="${esc(it.naam)}" loading="lazy">`:'Geen foto')+(it.theelicht?'<span class="lbl">Hier kan een theelicht in</span>':'')}
@@ -208,11 +209,20 @@ async function keyFor(code,salt){const m=await crypto.subtle.importKey('raw',enc
 async function seal(code,text){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},await keyFor(code,salt),enc.encode(text));return{salt:b2a(salt),iv:b2a(iv),data:b2a(ct)}}
 async function unseal(code,u){try{const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:a2b(u.iv)},await keyFor(code,a2b(u.salt)),a2b(u.data));return dec.decode(pt)}catch(e){return null}}
 
-$('#loginForm').onsubmit=e=>{
+$('#loginForm').onsubmit=async e=>{
   e.preventDefault();
-  const code=$('#token').value.trim(),u={'2424':'Dennis','1515':'Tessa'}[code];
-  if(!u){$('#loginMsg').textContent='Code klopt niet.';return}
-  token='demo';repo='demo';who=u;$('#token').value='';$('#login').close();render();
+  const code=$('#token').value.trim();
+  $('#loginMsg').textContent='Controleren...';
+  let cfg;
+  try{const r=await fetch('config.json?'+Date.now());if(!r.ok)throw 0;cfg=await r.json()}
+  catch(x){$('#loginMsg').textContent='Beheer is nog niet ingesteld.';return}
+  for(const u of cfg.users){
+    const t=await unseal(code,u);
+    if(t){token=t;repo=cfg.repo;who=u.naam;
+      try{sessionStorage.setItem('tok',t);sessionStorage.setItem('repo',repo);sessionStorage.setItem('who',who)}catch(x){}
+      $('#token').value='';$('#login').close();render();return}
+  }
+  $('#loginMsg').textContent='Code klopt niet.';
 };
 
 /* Eenmalig instellen: open de site met #setup achter het adres */
@@ -227,7 +237,7 @@ $('#setupForm').onsubmit=async e=>{
   $('#sMsg').style.color='inherit';$('#sMsg').textContent='Klaar. Download het bestand en upload het in je repository.';
   $('#sDl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download='config.json';a.click()};
 };
-
+if(location.hash==='#setup')openSetup();
 
 let tmp=[];
 function drawThemes(){$('#themList').innerHTML=tmp.map((t,i)=>`<label class="chk"><input type="checkbox" data-i="${i}" ${t.aan?'checked':''}> ${esc(t.naam)}</label>`).join('')}
@@ -250,7 +260,7 @@ $('#editForm').onsubmit=async e=>{
   try{
     let foto=editing?.foto||'';
     const f=$('#fFoto').files[0];
-    if(f){foto=URL.createObjectURL(f)}
+    if(f){const path='fotos/'+Date.now()+'.jpg';await putFile(path,await shrink(f),'Foto '+$('#fNaam').value);foto=path}
     const maten=$('#fMaten').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const k=l.lastIndexOf('=');return k<0?null:{maat:l.slice(0,k).trim(),prijs:l.slice(k+1).trim()}}).filter(m=>m&&m.maat&&m.prijs);
     if(!$('#fPrijs').value.trim()&&!maten.length)throw new Error('Vul een prijs in, of maten in de vorm "maat = prijs".');
     const it={id:editing?.id||('p'+Date.now()),cat:$('#fCat').value,naam:$('#fNaam').value.trim(),artnr:$('#fArt').value.trim(),prijs:$('#fPrijs').value.trim(),afmetingen:$('#fDim').value.trim(),thema:$('#fThema').value,verborgen:$('#fHid').checked,theelicht:$('#fTheel').checked,maten,foto};
@@ -265,9 +275,17 @@ $('#editForm').onsubmit=async e=>{
 /* GitHub API */
 const api=p=>`https://api.github.com/repos/${repo}/contents/${p}`;
 const H=()=>({Authorization:'Bearer '+token,Accept:'application/vnd.github+json'});
+async function putFile(path,b64,message){
+  let sha;
+  const g=await fetch(api(path),{headers:H()});
+  if(g.ok)sha=(await g.json()).sha;
+  const r=await fetch(api(path),{method:'PUT',headers:H(),body:JSON.stringify({message,content:b64,sha})});
+  if(!r.ok)throw new Error('GitHub weigerde de opslag ('+r.status+'). Controleer de rechten van je code.');
+}
 async function commit(next,message,nt){
+  await putFile('products.json',btoa(unescape(encodeURIComponent(JSON.stringify({themas:nt||themas,items:next},null,2)))),message);
   if(nt)themas=nt;items=next;render();
-  const t=$('#toast');t.textContent='Testversie: wijziging staat alleen in dit scherm.';t.style.display='block';setTimeout(()=>t.style.display='none',3500);
+  const t=$('#toast');t.textContent='Opgeslagen. Op de site kan het even duren voordat het zichtbaar is.';t.style.display='block';setTimeout(()=>t.style.display='none',4000);
 }
 function shrink(file){
   return new Promise((res,rej)=>{
