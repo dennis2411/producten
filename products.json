@@ -41,12 +41,15 @@
     {
       "id": "p1794096065656",
       "cat": "producten",
-      "naam": "Pompoen set (Theelicht)",
+      "naam": "Pompoen set",
       "artnr": "H0001",
       "prijs": "20",
       "afmetingen": "Set van 2\n\n10cm hoog\n15cm breed\n\n9cm hoog \n11cm breed",
       "thema": "Herfst",
-      "verborgen": true,
+      "verborgen": false,
+      "theelicht": true,
+      "maten": [],
+      "kl": [],
       "foto": "fotos/1794096063512.jpg"
     },
     {
