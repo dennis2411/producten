@@ -153,6 +153,19 @@
       "theelicht": false,
       "maten": [],
       "foto": "fotos/1794143905079.jpg"
+    },
+    {
+      "id": "p1794144070943",
+      "cat": "producten",
+      "naam": "Dear Santa tekst",
+      "artnr": "D0008",
+      "prijs": "5,00",
+      "afmetingen": "21x6cm",
+      "thema": "Kerst",
+      "verborgen": false,
+      "theelicht": false,
+      "maten": [],
+      "foto": "fotos/1794144068533.jpg"
     }
   ]
 }
