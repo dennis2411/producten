@@ -54,11 +54,13 @@
       "id": "p1794096264129",
       "cat": "producten",
       "naam": "Sneeuwpop",
-      "artnr": "K0001",
+      "artnr": "D0002",
       "prijs": "5,00",
       "afmetingen": "13x6,5cm",
       "thema": "Kerst",
-      "verborgen": false,
+      "verborgen": true,
+      "theelicht": false,
+      "maten": [],
       "foto": "fotos/1794096261949.jpg"
     },
     {
