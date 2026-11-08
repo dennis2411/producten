@@ -101,6 +101,19 @@
         }
       ],
       "foto": "fotos/1794096599168.jpg"
+    },
+    {
+      "id": "p1794143386561",
+      "cat": "producten",
+      "naam": "Welkom Sint & Piet tekst",
+      "artnr": "D0006",
+      "prijs": "6,00",
+      "afmetingen": "25x9cm",
+      "thema": "Sinterklaas",
+      "verborgen": false,
+      "theelicht": false,
+      "maten": [],
+      "foto": "fotos/1794143383746.jpg"
     }
   ]
 }
