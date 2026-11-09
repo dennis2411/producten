@@ -58,12 +58,14 @@
       "naam": "Koekmannetje bakje",
       "artnr": "D0003",
       "prijs": "7,00",
+      "oud": "",
       "afmetingen": "13cm hoog\n15cm breed",
       "thema": "Kerst",
       "verborgen": false,
       "theelicht": false,
+      "opop": false,
       "maten": [],
-      "foto": "fotos/1794096402813.jpg"
+      "foto": "fotos/1794254427959.jpg"
     },
     {
       "id": "p1794096601990",
