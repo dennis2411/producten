@@ -254,6 +254,21 @@
       "opop": false,
       "maten": [],
       "foto": "fotos/1794254126523.jpg"
+    },
+    {
+      "id": "p1794254504068",
+      "cat": "producten",
+      "naam": "Hert",
+      "artnr": "D0012",
+      "prijs": "7,50",
+      "oud": "",
+      "afmetingen": "25x17cm",
+      "thema": "Kerst",
+      "verborgen": false,
+      "theelicht": false,
+      "opop": false,
+      "maten": [],
+      "foto": "fotos/1794254500530.jpg"
     }
   ]
 }
