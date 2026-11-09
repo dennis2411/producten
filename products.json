@@ -29,12 +29,14 @@
     {
       "id": "p1794075938835",
       "cat": "set",
-      "naam": "Set 1 Kerst",
+      "naam": "Kerst Set 1",
       "artnr": "S0001",
       "prijs": "25,00",
       "afmetingen": "Set van 6 artikelen",
       "thema": "Kerst",
       "verborgen": false,
+      "theelicht": false,
+      "maten": [],
       "foto": "fotos/1794076032441.jpg"
     },
     {
