@@ -269,6 +269,21 @@
       "opop": false,
       "maten": [],
       "foto": "fotos/1794254500530.jpg"
+    },
+    {
+      "id": "p1794254722009",
+      "cat": "producten",
+      "naam": "Notenkraker",
+      "artnr": "D0013",
+      "prijs": "5,00",
+      "oud": "",
+      "afmetingen": "15cm hoog",
+      "thema": "Kerst",
+      "verborgen": false,
+      "theelicht": true,
+      "opop": false,
+      "maten": [],
+      "foto": "fotos/1794254719265.jpg"
     }
   ]
 }
