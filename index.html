@@ -97,7 +97,7 @@ input,textarea,select{padding:12px}
 <nav>
   <button data-cat="actie">Actie</button>
   <button data-cat="producten">Producten</button>
-  <button data-cat="set">Bundels</button>
+  <button data-cat="set">Bundel</button>
 </nav>
 <main>
   <div class="tools"><input id="q" type="search" placeholder="Zoek op naam of artikelnummer" aria-label="Zoeken"><div class="chips" id="chips"></div></div>
@@ -137,9 +137,10 @@ input,textarea,select{padding:12px}
 <dialog id="edit"><form class="dlg" id="editForm" method="dialog">
   <h2 id="editTitle">Product</h2>
   <label>Naam<input id="fNaam" required></label>
-  <label>Pagina<select id="fCat"><option value="producten">Producten</option><option value="set">Set</option></select></label>
+  <label>Pagina<select id="fCat"><option value="producten">Producten</option><option value="set">Bundel</option></select></label>
   <label id="fThemaW">Thema<select id="fThema"></select></label>
   <label>Artikelnummer<input id="fArt" required></label>
+  <div class="msg" id="artMsg"></div>
   <label><span id="fPrijsL">Prijs (bijv. 12,50). Leeg laten bij meerdere maten</span><input id="fPrijs"></label>
   <label class="chk"><input type="checkbox" id="fAct"> In de actie</label>
   <label id="fOudW" hidden>Oude prijs (wordt doorgekrast)<input id="fOud" placeholder="Bijv. 15,00"></label>
@@ -256,13 +257,15 @@ $('#themList').onchange=e=>{tmp[e.target.dataset.i].aan=e.target.checked};
 $('#themAdd').onclick=()=>{const n=$('#themNew').value.trim();if(!n||tmp.some(t=>t.naam.toLowerCase()===n.toLowerCase()))return;tmp.push({naam:n,aan:true});$('#themNew').value='';drawThemes()};
 $('#themCancel').onclick=()=>$('#themDlg').close();
 $('#themSave').onclick=async()=>{$('#themMsg').textContent='Opslaan...';try{await commit(items,'Thema\'s',tmp);$('#themDlg').close()}catch(e){$('#themMsg').textContent=e.message}};
+function checkArt(){const v=$('#fArt').value.trim().toLowerCase();const d=v&&items.find(x=>x.id!==editing?.id&&String(x.artnr).trim().toLowerCase()===v);$('#artMsg').textContent=d?'Dit artikelnummer is al in gebruik ('+d.naam+').':'';return d||null}
+$('#fArt').oninput=checkArt;
 function syncAct(){const on=$('#fAct').checked;$('#fOudW').hidden=!on;$('#fThemaW').hidden=on;$('#fPrijsL').textContent=(on?'Nieuwe prijs':'Prijs')+' (bijv. 12,50). Leeg laten bij meerdere maten'}
 $('#fAct').onchange=syncAct;
 function openEdit(i){
   editing=i;$('#editTitle').textContent=i?'Product bewerken':'Nieuw toevoegen';
   $('#fNaam').value=i?.naam||'';$('#fCat').value=i?.cat||cat;$('#fArt').value=i?.artnr||'';$('#fThema').innerHTML='<option value="">Geen</option>'+themas.map(t=>`<option>${esc(t.naam)}</option>`).join('');$('#fThema').value=i?.thema||'';$('#fHid').checked=!!i?.verborgen;$('#fTheel').checked=!!i?.theelicht;$('#fOp').checked=!!i?.opop;$('#fMaten').value=(i?.maten||[]).map(m=>m.maat+' = '+m.prijs).join('\n');
   $('#fPrijs').value=i?.prijs||'';$('#fOud').value=i?.oud||'';$('#fAct').checked=i?!!i.oud:cat==='actie';syncAct();$('#fDim').value=i?.afmetingen||'';$('#fFoto').value='';$('#editMsg').textContent='';
-  $('#edit').showModal();
+  checkArt();$('#edit').showModal();
 }
 $('#addBtn').onclick=()=>openEdit(null);
 $('#editCancel').onclick=()=>$('#edit').close();
@@ -270,6 +273,7 @@ $('#editForm').onsubmit=async e=>{
   e.preventDefault();
   $('#saveBtn').disabled=true;$('#editMsg').textContent='Opslaan...';
   try{
+    const dup=checkArt();if(dup)throw new Error('Dit artikelnummer is al in gebruik ('+dup.naam+').');
     let foto=editing?.foto||'';
     const f=$('#fFoto').files[0];
     if(f){const path='fotos/'+Date.now()+'.jpg';await putFile(path,await shrink(f),'Foto '+$('#fNaam').value);foto=path}
