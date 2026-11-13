@@ -73,22 +73,24 @@
       "naam": "Kerstboom ribbel",
       "artnr": "D0004",
       "prijs": "",
+      "oud": "",
       "afmetingen": "",
       "thema": "Kerst",
       "verborgen": false,
       "theelicht": true,
+      "opop": false,
       "maten": [
         {
           "maat": "Klein, 13cm",
-          "prijs": "€3,00"
-        },
-        {
-          "maat": "Middel, 17cm",
           "prijs": "€4,00"
         },
         {
+          "maat": "Middel, 17cm",
+          "prijs": "€5,00"
+        },
+        {
           "maat": "Groot, 24cm",
-          "prijs": "€7,50"
+          "prijs": "€8,00"
         }
       ],
       "foto": "fotos/1794096599168.jpg"
