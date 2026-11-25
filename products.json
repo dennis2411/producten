@@ -288,6 +288,21 @@
       "opop": true,
       "maten": [],
       "foto": ""
+    },
+    {
+      "id": "p1795624684751",
+      "cat": "producten",
+      "naam": "Rolex klok GMT",
+      "artnr": "D0016",
+      "prijs": "20,00",
+      "oud": "",
+      "afmetingen": "25x25cm",
+      "thema": "Woondecoratie",
+      "verborgen": false,
+      "theelicht": false,
+      "opop": false,
+      "maten": [],
+      "foto": "fotos/1795624682378.jpg"
     }
   ]
 }
